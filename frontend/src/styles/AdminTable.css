@@ -1,0 +1,63 @@
+.admin-families,
+.admin-members,
+.admin-messages,
+.admin-media,
+.admin-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-search {
+  display: flex;
+  flex: 1 1 360px;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.admin-search input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #111827;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-search input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+
+.admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.admin-pagination span {
+  color: #4b5563;
+  font-size: 0.95rem;
+}

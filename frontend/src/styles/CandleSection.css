@@ -1,0 +1,163 @@
+.candle-section-card {
+  border-color: #D4AF37 !important; /* Gold border */
+  text-align: center;
+  background-color: #0F172A !important; /* Deep Navy */
+  color: #F8FAFC !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+.candle-header {
+  border-bottom: 1px solid #1E293B !important;
+  color: #D4AF37 !important; /* Warm Gold */
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.candle-body-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem !important;
+}
+
+.candle-intro-text {
+  font-size: 0.875rem;
+  color: #94A3B8;
+  margin-bottom: 2rem;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* Candle Structure styling */
+.candle-container {
+  position: relative;
+  width: 80px;
+  height: 160px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.candle-stand {
+  width: 70px;
+  height: 8px;
+  background: linear-gradient(90deg, #AA7C11, #D4AF37, #AA7C11);
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.candle-wax {
+  width: 32px;
+  height: 90px;
+  background: linear-gradient(90deg, #E2E8F0, #F1F5F9, #CBD5E1);
+  border-radius: 4px 4px 0 0;
+  z-index: 1;
+  box-shadow: inset -4px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.candle-wick {
+  position: absolute;
+  bottom: 90px; /* height of wax */
+  width: 2px;
+  height: 10px;
+  background-color: #475569;
+  border-radius: 1px;
+}
+
+.candle-wick--lit {
+  background-color: #0F172A;
+}
+
+/* Flame & Glow effects */
+.flame-wrapper {
+  position: absolute;
+  bottom: 98px;
+  width: 20px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  animation: flicker 1.8s infinite ease-in-out;
+  transform-origin: center bottom;
+}
+
+.flame-core {
+  width: 12px;
+  height: 24px;
+  background: radial-gradient(ellipse at center, #FFD700 0%, #FF8C00 60%, #FF4500 100%);
+  border-radius: 50% 50% 20% 20%;
+  box-shadow: 0 0 10px #FF8C00, 0 -2px 6px #FF4500;
+  z-index: 3;
+}
+
+.flame-glow {
+  position: absolute;
+  bottom: -5px;
+  width: 35px;
+  height: 35px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, rgba(255, 140, 0, 0.1) 50%, rgba(255, 69, 0, 0) 70%);
+  border-radius: 50%;
+  z-index: 2;
+  animation: glow-pulse 1.8s infinite ease-in-out;
+}
+
+/* Flame Flickering Animation */
+@keyframes flicker {
+  0% { transform: scale(1) rotate(-1deg); }
+  20% { transform: scale(1.05) rotate(1deg); }
+  40% { transform: scale(0.95) rotate(-1.5deg); }
+  60% { transform: scale(1.02) rotate(1.5deg) skewX(2deg); }
+  80% { transform: scale(0.98) rotate(-0.5deg) skewX(-2deg); }
+  100% { transform: scale(1) rotate(-1deg); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+/* Statistics display */
+.candle-stats-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.candle-count-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #D4AF37; /* Gold */
+  line-height: 1;
+}
+
+.candle-count-label {
+  font-size: 0.75rem;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+.light-candle-btn {
+  width: 100%;
+  max-width: 220px;
+  background-color: #D4AF37 !important;
+  color: #0F172A !important;
+  border: none !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.light-candle-btn:hover:not(:disabled) {
+  background-color: #F5E6CC !important;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+}
+
+.light-candle-btn--active {
+  background-color: transparent !important;
+  color: #D4AF37 !important;
+  border: 1.5px solid #D4AF37 !important;
+}
