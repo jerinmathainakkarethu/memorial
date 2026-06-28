@@ -14,6 +14,7 @@ const timelineRoutes = require('./src/routes/timeline');
 const qrRoutes = require('./src/routes/qr');
 const statsRoutes = require('./src/routes/stats');
 const settingsRoutes = require('./src/routes/settings');
+const userRoutes = require('./src/routes/users');
 
 const errorHandler = require('./src/middleware/errorHandler');
 
@@ -80,6 +81,7 @@ app.use('/api/timeline', timelineRoutes);
 app.use('/api/qr', qrRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/users', userRoutes);
 
 // 404 Route handler
 app.use((req, res, next) => {

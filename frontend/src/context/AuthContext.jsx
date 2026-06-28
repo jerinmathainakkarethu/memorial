@@ -29,6 +29,18 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('family_memorial_token')
   }, [])
 
+  useEffect(() => {
+    const handleLogoutEvent = () => {
+      logout()
+      if (window.location.pathname !== '/') {
+        window.location.replace('/')
+      }
+    }
+
+    window.addEventListener('auth:logout', handleLogoutEvent)
+    return () => window.removeEventListener('auth:logout', handleLogoutEvent)
+  }, [logout])
+
   const isAuthenticated = !!user
 
   return (

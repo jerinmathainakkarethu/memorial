@@ -51,6 +51,13 @@ exports.create = async (req, res, next) => {
     const sanitizedName = sanitizeHtml(visitor_name);
     const sanitizedMessage = sanitizeHtml(message);
 
+    const [[{ allow }]] = await pool.query(
+      "SELECT setting_value AS `allow` FROM app_settings WHERE setting_key = 'allow_public_messages'"
+    );
+    if (allow === '0') {
+      return res.status(403).json({ error: 'Public messages are currently disabled' });
+    }
+
     const [memberRows] = await pool.query(
       'SELECT family_id FROM family_members WHERE id = ? AND deleted_at IS NULL',
       [req.params.memberId]
@@ -62,9 +69,13 @@ exports.create = async (req, res, next) => {
 
     const familyId = memberRows[0].family_id;
 
+    const [[{ autoApprove }]] = await pool.query(
+      "SELECT setting_value AS autoApprove FROM app_settings WHERE setting_key = 'auto_approve_messages'"
+    );
+
     const [result] = await pool.query(
-      'INSERT INTO memorial_messages (family_id, member_id, visitor_name, message, ip_address) VALUES (?, ?, ?, ?, ?)',
-      [familyId, req.params.memberId, sanitizedName, sanitizedMessage, req.ip]
+      'INSERT INTO memorial_messages (family_id, member_id, visitor_name, message, is_approved, ip_address) VALUES (?, ?, ?, ?, ?, ?)',
+      [familyId, req.params.memberId, sanitizedName, sanitizedMessage, autoApprove === '1' ? 1 : 0, req.ip]
     );
 
     const [msg] = await pool.query('SELECT id, visitor_name, message, is_approved, created_at FROM memorial_messages WHERE id = ?', [result.insertId]);

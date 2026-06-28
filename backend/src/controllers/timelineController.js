@@ -4,7 +4,7 @@ const { paginate } = require('../utils/helpers');
 
 exports.list = async (req, res, next) => {
   try {
-    const { member_id } = req.query;
+    const { member_id, family_id } = req.query;
     const q = req.query.q || req.query.search || '';
     const { page, limit, offset } = paginate(req.query.page, req.query.limit);
 
@@ -16,19 +16,24 @@ exports.list = async (req, res, next) => {
       params.push(member_id);
     }
 
+    if (family_id) {
+      where += ' AND t.family_id = ?';
+      params.push(family_id);
+    }
+
     if (q) {
       const searchTerm = `%${q}%`;
-      where += ' AND (t.title LIKE ? OR t.title_ml LIKE ? OR t.description LIKE ? OR t.description_ml LIKE ? OR m.full_name LIKE ?)';
-      params.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
+      where += ' AND (t.title LIKE ? OR t.title_ml LIKE ? OR t.description LIKE ? OR t.description_ml LIKE ? OR m.full_name LIKE ? OR f.name LIKE ?)';
+      params.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
     }
 
     const [countResult] = await pool.query(
-      `SELECT COUNT(*) as total FROM timeline_events t JOIN family_members m ON m.id = t.member_id ${where}`,
+      `SELECT COUNT(*) as total FROM timeline_events t JOIN family_members m ON m.id = t.member_id JOIN families f ON f.id = t.family_id ${where}`,
       params
     );
     const total = countResult[0].total;
 
-    const sql = `SELECT t.*, m.full_name as member_name FROM timeline_events t JOIN family_members m ON m.id = t.member_id ${where} ORDER BY COALESCE(t.event_date, CONCAT(t.event_year, "-01-01")) ASC LIMIT ? OFFSET ?`;
+    const sql = `SELECT t.*, m.full_name as member_name, f.name as family_name FROM timeline_events t JOIN family_members m ON m.id = t.member_id JOIN families f ON f.id = t.family_id ${where} ORDER BY COALESCE(t.event_date, CONCAT(t.event_year, "-01-01")) ASC LIMIT ? OFFSET ?`;
     const [rows] = await pool.query(sql, [...params, limit, offset]);
 
     res.json({

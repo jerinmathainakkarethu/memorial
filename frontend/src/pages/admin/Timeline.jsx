@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchTimelinePage, createTimelineEvent, updateTimelineEvent, deleteTimelineEvent, fetchAllMembers } from '../../utils/api';
+import { fetchTimelinePage, createTimelineEvent, updateTimelineEvent, deleteTimelineEvent, fetchAllMembers, fetchAllFamilies } from '../../utils/api';
 import Card from '../../components/ui/Card';
 import Table from '../../components/ui/Table';
 import Badge from '../../components/ui/Badge';
@@ -11,11 +11,13 @@ import '../../styles/AdminTable.css';
 function AdminTimeline() {
   const [events, setEvents] = useState([]);
   const [members, setMembers] = useState([]);
+  const [families, setFamilies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [search, setSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [familyFilter, setFamilyFilter] = useState('');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0, limit: 20 });
 
@@ -38,8 +40,9 @@ function AdminTimeline() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const mems = await fetchAllMembers();
+      const [mems, fams] = await Promise.all([fetchAllMembers(), fetchAllFamilies()]);
       setMembers(mems);
+      setFamilies(fams);
     } catch (err) {
       console.error(err);
     } finally {
@@ -47,10 +50,10 @@ function AdminTimeline() {
     }
   };
 
-  const loadEvents = async ({ q = search, page = 1 } = {}) => {
+  const loadEvents = async ({ q = search, familyId = familyFilter, page = 1 } = {}) => {
     setLoading(true);
     try {
-      const response = await fetchTimelinePage({ q, page, limit: 20 });
+      const response = await fetchTimelinePage({ q, familyId, page, limit: 20 });
       setEvents(response.data || []);
       setPagination(response.pagination || { page: 1, pages: 1, total: 0, limit: 20 });
     } catch (err) {
@@ -63,10 +66,6 @@ function AdminTimeline() {
   useEffect(() => {
     loadData();
   }, []);
-
-  useEffect(() => {
-    loadEvents({ q: searchTerm, page });
-  }, [searchTerm, page]);
 
   const handleOpenAdd = () => {
     setEditingEvent(null);
@@ -122,9 +121,18 @@ function AdminTimeline() {
     setPage(1);
   };
 
+  const handleFamilyFilterChange = (e) => {
+    setFamilyFilter(e.target.value);
+    setPage(1);
+  };
+
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
+
+  useEffect(() => {
+    loadEvents({ q: searchTerm, familyId: familyFilter, page });
+  }, [searchTerm, familyFilter, page]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -161,6 +169,7 @@ function AdminTimeline() {
 
   const columns = [
     { key: 'member_name', label: 'Member' },
+    { key: 'family_name', label: 'Family', render: (row) => row.family_name || '-' },
     { key: 'title', label: 'Event Title' },
     { key: 'title_ml', label: 'Title (Malayalam)', render: (row) => row.title_ml || '-' },
     {
@@ -209,6 +218,19 @@ function AdminTimeline() {
             />
             <Button type="submit" size="sm" variant="outline">Search</Button>
           </form>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <select
+              value={familyFilter}
+              onChange={handleFamilyFilterChange}
+              className="form-input"
+              style={{ minWidth: '200px', background: '#fff' }}
+            >
+              <option value="">All Families</option>
+              {families.map(f => (
+                <option key={f.id} value={f.id}>{f.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
         <Table columns={columns} data={events} />
         <div className="admin-pagination">

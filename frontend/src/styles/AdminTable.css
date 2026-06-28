@@ -2,7 +2,8 @@
 .admin-members,
 .admin-messages,
 .admin-media,
-.admin-timeline {
+.admin-timeline,
+.admin-users {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;

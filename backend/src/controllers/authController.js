@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const pool = require('../config/database');
 const { logActivity } = require('../utils/activityLogger');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'family-memorial-dev-secret-change-in-production';
+
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -25,7 +27,7 @@ exports.login = async (req, res, next) => {
 
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      process.env.JWT_SECRET,
+      JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 

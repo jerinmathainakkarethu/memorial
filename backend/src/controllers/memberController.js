@@ -144,12 +144,17 @@ exports.getBySlug = async (req, res, next) => {
       [member.id]
     );
 
+    const [[{ hideLiving }]] = await pool.query(
+      "SELECT setting_value AS hideLiving FROM app_settings WHERE setting_key = 'hide_living'"
+    );
+
     const [relationships] = await pool.query(
       `SELECT r.*, rm.full_name as related_name, rm.profile_photo as related_photo,
         rm.date_of_birth as related_dob, rm.date_of_death as related_dod, rm.slug as related_slug
        FROM relationships r
        JOIN family_members rm ON rm.id = r.related_member_id
-       WHERE r.member_id = ? AND r.deleted_at IS NULL AND rm.deleted_at IS NULL`,
+       WHERE r.member_id = ? AND r.deleted_at IS NULL AND rm.deleted_at IS NULL
+       ${hideLiving === '1' ? 'AND rm.is_deceased = 1' : ''}`,
       [member.id]
     );
 
@@ -195,6 +200,7 @@ exports.create = async (req, res, next) => {
       family_id, full_name, full_name_ml, nickname, nickname_ml, gender, date_of_birth, date_of_death,
       place_of_birth, place_of_death, biography, biography_ml, occupation, occupation_ml, education, education_ml,
       awards, awards_ml, hobbies, hobbies_ml, religion, religion_ml, notes, notes_ml, is_deceased, relationships,
+      grave_location,
     } = req.body;
 
     const slug = generateSlug(full_name);
@@ -222,6 +228,13 @@ exports.create = async (req, res, next) => {
       await connection.query(
         'INSERT INTO relationships (family_id, member_id, related_member_id, relationship_type) VALUES ?',
         [relValues]
+      );
+    }
+
+    if (grave_location && (grave_location.map_url || grave_location.address || grave_location.cemetery_name || grave_location.plot_number || grave_location.section)) {
+      await connection.query(
+        'INSERT INTO grave_locations (member_id, latitude, longitude, address, cemetery_name, plot_number, section, map_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [memberId, null, null, grave_location.address || null, grave_location.cemetery_name || null, grave_location.plot_number || null, grave_location.section || null, grave_location.map_url || null]
       );
     }
 
@@ -268,7 +281,7 @@ exports.update = async (req, res, next) => {
       full_name, full_name_ml, nickname, nickname_ml, gender, date_of_birth, date_of_death,
       place_of_birth, place_of_death, biography, biography_ml, occupation, occupation_ml, education, education_ml,
       awards, awards_ml, hobbies, hobbies_ml, religion, religion_ml, notes, notes_ml, is_deceased, is_active,
-      relationships, family_id
+      relationships, family_id, grave_location
     } = req.body;
 
     const fields = [];
@@ -311,6 +324,23 @@ exports.update = async (req, res, next) => {
         `UPDATE family_members SET ${fields.join(', ')} WHERE id = ? AND deleted_at IS NULL`,
         values
       );
+    }
+
+    if (grave_location !== undefined) {
+      const [existingGraveLocation] = await connection.query('SELECT id FROM grave_locations WHERE member_id = ?', [req.params.id]);
+      if (existingGraveLocation.length) {
+        await connection.query(
+          'UPDATE grave_locations SET latitude = ?, longitude = ?, address = ?, cemetery_name = ?, plot_number = ?, section = ?, map_url = ? WHERE member_id = ?',
+          [null, null, grave_location?.address || null, grave_location?.cemetery_name || null, grave_location?.plot_number || null, grave_location?.section || null, grave_location?.map_url || null, req.params.id]
+        );
+      } else if (grave_location && (grave_location.map_url || grave_location.address || grave_location.cemetery_name || grave_location.plot_number || grave_location.section)) {
+        await connection.query(
+          'INSERT INTO grave_locations (member_id, latitude, longitude, address, cemetery_name, plot_number, section, map_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          [req.params.id, null, null, grave_location.address || null, grave_location.cemetery_name || null, grave_location.plot_number || null, grave_location.section || null, grave_location.map_url || null]
+        );
+      } else {
+        await connection.query('DELETE FROM grave_locations WHERE member_id = ?', [req.params.id]);
+      }
     }
 
     // Process relationships update
@@ -386,11 +416,16 @@ exports.getFamilyTree = async (req, res, next) => {
   try {
     const familyId = req.params.familyId;
 
+    const [[{ hideLiving }]] = await pool.query(
+      "SELECT setting_value AS hideLiving FROM app_settings WHERE setting_key = 'hide_living'"
+    );
+
     const [members] = await pool.query(
       `SELECT id, full_name, nickname, slug, gender, date_of_birth, date_of_death,
         profile_photo, is_deceased
        FROM family_members
        WHERE family_id = ? AND deleted_at IS NULL AND is_active = 1
+       ${hideLiving === '1' ? 'AND is_deceased = 1' : ''}
        ORDER BY date_of_birth ASC`,
       [familyId]
     );
@@ -452,6 +487,13 @@ exports.search = async (req, res, next) => {
 
 exports.lightCandle = async (req, res, next) => {
   try {
+    const [[{ allow }]] = await pool.query(
+      "SELECT setting_value AS `allow` FROM app_settings WHERE setting_key = 'allow_candles'"
+    );
+    if (allow === '0') {
+      return res.status(403).json({ error: 'Virtual candles are currently disabled' });
+    }
+
     const memberId = req.params.id;
     await pool.query(
       'UPDATE family_members SET candle_count = candle_count + 1 WHERE id = ? AND deleted_at IS NULL',

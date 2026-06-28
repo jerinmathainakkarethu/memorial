@@ -1,6 +1,16 @@
 const BASE_URL = 'http://localhost:5000';
 const API_URL = `${BASE_URL}/api`;
 
+function isInvalidTokenError(errorMessage = '') {
+  return /invalid token/i.test(errorMessage);
+}
+
+function handleInvalidToken() {
+  localStorage.removeItem('family_memorial_user');
+  localStorage.removeItem('family_memorial_token');
+  window.dispatchEvent(new Event('auth:logout'));
+}
+
 // Helper to get media URL pointing to the backend
 export function getMediaUrl(path) {
   if (!path) return '';
@@ -27,10 +37,19 @@ async function request(endpoint, options = {}, returnRaw = false) {
     headers
   });
 
-  const json = await response.json();
+  let json = {};
+  try {
+    json = await response.json();
+  } catch {
+    json = {};
+  }
 
   if (!response.ok) {
-    throw new Error(json.error || 'Something went wrong');
+    const errorMessage = json.error || json.message || 'Something went wrong';
+    if (isInvalidTokenError(errorMessage)) {
+      handleInvalidToken();
+    }
+    throw new Error(errorMessage);
   }
 
   if (returnRaw) {
@@ -66,10 +85,21 @@ export async function fetchSettings() {
   return request('/settings');
 }
 
+export async function fetchPublicSettings() {
+  return request('/settings/public');
+}
+
 export async function updateSetting(key, value) {
   return request(`/settings/${key}`, {
     method: 'PUT',
     body: JSON.stringify({ value })
+  });
+}
+
+export async function updateSettings(data) {
+  return request('/settings', {
+    method: 'PUT',
+    body: JSON.stringify(data)
   });
 }
 
@@ -241,9 +271,10 @@ export async function fetchTimelineEvents({ memberId = null } = {}) {
   return response.data || [];
 }
 
-export async function fetchTimelinePage({ memberId = null, q = '', page = 1, limit = 20 } = {}) {
+export async function fetchTimelinePage({ memberId = null, familyId = null, q = '', page = 1, limit = 20 } = {}) {
   let endpoint = `/timeline?limit=${limit}&page=${page}`;
   if (memberId) endpoint += `&member_id=${memberId}`;
+  if (familyId) endpoint += `&family_id=${familyId}`;
   if (q) endpoint += `&q=${encodeURIComponent(q)}`;
   return request(endpoint, {}, true);
 }
@@ -376,4 +407,33 @@ export async function generateFamilyQR(familyId, siteUrl) {
 
 export async function previewQR(memberId) {
   return request(`/qr/preview/${memberId}`);
+}
+
+// ==========================================
+// ADMIN API (Users)
+// ==========================================
+
+export async function fetchUsersPage({ q = '', page = 1, limit = 20 } = {}) {
+  const endpoint = `/users?limit=${limit}&page=${page}${q ? `&q=${encodeURIComponent(q)}` : ''}`;
+  return request(endpoint, {}, true);
+}
+
+export async function createUser(data) {
+  return request('/users', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+}
+
+export async function updateUser(id, data) {
+  return request(`/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  });
+}
+
+export async function deleteUser(id) {
+  return request(`/users/${id}`, {
+    method: 'DELETE'
+  });
 }

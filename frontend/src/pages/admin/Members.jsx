@@ -48,6 +48,13 @@ function AdminMembers() {
     notes_ml: '',
     is_deceased: false,
     is_active: true,
+    grave_location: {
+      map_url: '',
+      address: '',
+      cemetery_name: '',
+      plot_number: '',
+      section: ''
+    },
     father_id: '',
     mother_id: '',
     spouse_id: ''
@@ -117,6 +124,13 @@ function AdminMembers() {
       notes_ml: '',
       is_deceased: false,
       is_active: true,
+      grave_location: {
+        map_url: '',
+        address: '',
+        cemetery_name: '',
+        plot_number: '',
+        section: ''
+      },
       father_id: '',
       mother_id: '',
       spouse_id: ''
@@ -138,6 +152,17 @@ function AdminMembers() {
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
+  };
+
+  const handleFamilyChange = (e) => {
+    const familyId = e.target.value;
+    setForm(prev => ({
+      ...prev,
+      family_id: familyId,
+      father_id: '',
+      mother_id: '',
+      spouse_id: ''
+    }));
   };
 
   const handleOpenEdit = async (member) => {
@@ -176,6 +201,13 @@ function AdminMembers() {
       notes_ml: detailedMember.notes_ml || '',
       is_deceased: !!detailedMember.is_deceased,
       is_active: !!detailedMember.is_active,
+      grave_location: {
+        map_url: detailedMember.graveLocation?.map_url || '',
+        address: detailedMember.graveLocation?.address || '',
+        cemetery_name: detailedMember.graveLocation?.cemetery_name || '',
+        plot_number: detailedMember.graveLocation?.plot_number || '',
+        section: detailedMember.graveLocation?.section || ''
+      },
       father_id: fatherId,
       mother_id: motherId,
       spouse_id: spouseId
@@ -238,6 +270,7 @@ function AdminMembers() {
         notes_ml: form.notes_ml,
         is_deceased: form.is_deceased,
         is_active: form.is_active,
+        grave_location: form.grave_location,
         relationships
       };
 
@@ -262,10 +295,18 @@ function AdminMembers() {
     }
   };
 
-  // Filter possible fathers, mothers, and spouses based on gender for selection options
-  const maleOptions = allMembers.filter(m => m.gender === 'male' && (!editingMember || m.id !== editingMember.id));
-  const femaleOptions = allMembers.filter(m => m.gender === 'female' && (!editingMember || m.id !== editingMember.id));
-  const spouseOptions = allMembers.filter(m => !editingMember || m.id !== editingMember.id);
+  const selectedFamilyId = form.family_id ? Number(form.family_id) : null;
+
+  // Filter possible fathers, mothers, and spouses based on gender and selected family
+  const maleOptions = allMembers.filter(
+    m => m.gender === 'male' && m.family_id === selectedFamilyId && (!editingMember || m.id !== editingMember.id)
+  );
+  const femaleOptions = allMembers.filter(
+    m => m.gender === 'female' && m.family_id === selectedFamilyId && (!editingMember || m.id !== editingMember.id)
+  );
+  const spouseOptions = allMembers.filter(
+    m => m.family_id === selectedFamilyId && (!editingMember || m.id !== editingMember.id)
+  );
 
   const columns = [
     { key: 'full_name', label: 'Name' },
@@ -344,7 +385,7 @@ function AdminMembers() {
         <Modal onClose={() => setModalOpen(false)}>
           <Modal.Header>{editingMember ? 'Edit Family Member' : 'Add New Family Member'}</Modal.Header>
           <Modal.Body>
-            <form onSubmit={handleSubmit} className="admin-form">
+            <form onSubmit={handleSubmit} className="admin-form modal-form">
               {error && <div className="form-error">{error}</div>}
 
               <div className="form-grid">
@@ -353,7 +394,7 @@ function AdminMembers() {
                   <label>Family Lineage</label>
                   <select
                     value={form.family_id}
-                    onChange={(e) => setForm({ ...form, family_id: e.target.value })}
+                    onChange={handleFamilyChange}
                     required
                     className="form-input"
                   >
@@ -500,6 +541,48 @@ function AdminMembers() {
                   />
                 </div>
 
+                {/* Grave location configuration */}
+                <div className="form-group" style={{ gridColumn: 'span 2', borderTop: '1px solid #E2E8F0', paddingTop: '1rem', marginTop: '0.5rem' }}>
+                  <h4 style={{ color: '#0F172A', marginBottom: '8px' }}>Grave Location</h4>
+                  <div style={{ display: 'grid', gap: '10px' }}>
+                    <input
+                      type="text"
+                      value={form.grave_location?.cemetery_name || ''}
+                      onChange={(e) => setForm({ ...form, grave_location: { ...form.grave_location, cemetery_name: e.target.value } })}
+                      placeholder="Cemetery name"
+                      className="form-input"
+                    />
+                    <input
+                      type="text"
+                      value={form.grave_location?.plot_number || ''}
+                      onChange={(e) => setForm({ ...form, grave_location: { ...form.grave_location, plot_number: e.target.value } })}
+                      placeholder="Plot number"
+                      className="form-input"
+                    />
+                    <input
+                      type="text"
+                      value={form.grave_location?.section || ''}
+                      onChange={(e) => setForm({ ...form, grave_location: { ...form.grave_location, section: e.target.value } })}
+                      placeholder="Section"
+                      className="form-input"
+                    />
+                    <input
+                      type="text"
+                      value={form.grave_location?.address || ''}
+                      onChange={(e) => setForm({ ...form, grave_location: { ...form.grave_location, address: e.target.value } })}
+                      placeholder="Full address"
+                      className="form-input"
+                    />
+                    <input
+                      type="url"
+                      value={form.grave_location?.map_url || ''}
+                      onChange={(e) => setForm({ ...form, grave_location: { ...form.grave_location, map_url: e.target.value } })}
+                      placeholder="Paste share map URL"
+                      className="form-input"
+                    />
+                  </div>
+                </div>
+
                 {/* Relationships configuration */}
                 <div className="form-group" style={{ gridColumn: 'span 2', borderTop: '1px solid #E2E8F0', paddingTop: '1rem', marginTop: '0.5rem' }}>
                   <h4 style={{ color: '#0F172A', marginBottom: '8px' }}>Family Relationships</h4>
@@ -573,7 +656,7 @@ function AdminMembers() {
                 </div>
               </div>
 
-              <div className="form-actions" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+              <div className="form-actions">
                 <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>
                 <Button type="submit" disabled={submitting}>
                   {submitting ? 'Saving...' : 'Save'}

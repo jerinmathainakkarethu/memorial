@@ -64,10 +64,19 @@ async function seed() {
     const adminId = userResult.insertId;
     console.log('Admin user seeded.');
 
-    await pool.query(
-      `INSERT INTO app_settings (setting_key, setting_value) VALUES (?, ?)`,
-      ['hide_living', '0']
-    );
+    const settings = [
+      ['hide_living', '0'],
+      ['site_name', 'Family Memorial'],
+      ['allow_public_messages', '1'],
+      ['auto_approve_messages', '0'],
+      ['allow_candles', '1'],
+    ];
+    for (const [key, value] of settings) {
+      await pool.query(
+        'INSERT INTO app_settings (setting_key, setting_value) VALUES (?, ?)',
+        [key, value]
+      );
+    }
     console.log('App settings seeded.');
 
     // 2. Insert cover placeholders

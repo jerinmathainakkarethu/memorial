@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchMemberBySlug, submitMessage, getMediaUrl } from '../../utils/api';
+import { fetchMemberBySlug, fetchPublicSettings, submitMessage, getMediaUrl } from '../../utils/api';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Avatar from '../../components/ui/Avatar';
@@ -83,6 +83,7 @@ function MemberDetail({ slug: propSlug, isDrawer = false }) {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ visitor_name: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [settings, setSettings] = useState({});
 
   // Lightbox State
   const [lightboxImage, setLightboxImage] = useState(null);
@@ -98,6 +99,10 @@ function MemberDetail({ slug: propSlug, isDrawer = false }) {
         console.error(err);
         setLoading(false);
       });
+
+    fetchPublicSettings()
+      .then((data) => setSettings(data || {}))
+      .catch(() => {});
   }, [slug]);
 
   const handleSubmit = async (e) => {
@@ -331,29 +336,35 @@ function MemberDetail({ slug: propSlug, isDrawer = false }) {
                 </div>
               ) : null}
 
-              {submitted ? (
-                <p className="thank-you">{t('tribute_approval_notice')}</p>
-              ) : (
-                <form onSubmit={handleSubmit} className="message-form">
-                  <h4 style={{ color: '#0F172A', marginBottom: '8px', fontSize: '0.9375rem' }}>{t('leave_message')}</h4>
-                  <input
-                    type="text"
-                    placeholder={t('your_name')}
-                    value={form.visitor_name}
-                    onChange={(e) => setForm({ ...form, visitor_name: e.target.value })}
-                    required
-                    className="form-input"
-                  />
-                  <textarea
-                    placeholder={t('your_message')}
-                    value={form.message}
-                    onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    required
-                    rows={4}
-                    className="form-textarea"
-                  />
-                  <Button type="submit">{t('submit_message')}</Button>
-                </form>
+              {settings.allow_public_messages !== '0' && (
+                submitted ? (
+                  <p className="thank-you">
+                    {settings.auto_approve_messages === '1'
+                      ? 'Thank you for your tribute.'
+                      : t('tribute_approval_notice')}
+                  </p>
+                ) : (
+                  <form onSubmit={handleSubmit} className="message-form">
+                    <h4 style={{ color: '#0F172A', marginBottom: '8px', fontSize: '0.9375rem' }}>{t('leave_message')}</h4>
+                    <input
+                      type="text"
+                      placeholder={t('your_name')}
+                      value={form.visitor_name}
+                      onChange={(e) => setForm({ ...form, visitor_name: e.target.value })}
+                      required
+                      className="form-input"
+                    />
+                    <textarea
+                      placeholder={t('your_message')}
+                      value={form.message}
+                      onChange={(e) => setForm({ ...form, message: e.target.value })}
+                      required
+                      rows={4}
+                      className="form-textarea"
+                    />
+                    <Button type="submit">{t('submit_message')}</Button>
+                  </form>
+                )
               )}
             </Card.Body>
           </Card>
@@ -361,7 +372,7 @@ function MemberDetail({ slug: propSlug, isDrawer = false }) {
 
         <div className="member-detail__side">
           {/* Candle Lighting section */}
-          {member.is_deceased === 1 && (
+          {member.is_deceased === 1 && settings.allow_candles !== '0' && (
             <CandleSection memberId={member.id} initialCount={member.candle_count} />
           )}
 

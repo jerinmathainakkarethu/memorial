@@ -4,6 +4,7 @@ const { authenticate, requireRole } = require('../middleware/auth');
 
 router.get('/public', settingsController.getPublicSettings);
 router.get('/', authenticate, settingsController.list);
+router.put('/', authenticate, requireRole('admin', 'super_admin'), settingsController.updateMultiple);
 router.put('/:key', authenticate, requireRole('admin', 'super_admin'), settingsController.update);
 
 module.exports = router;

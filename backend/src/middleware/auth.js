@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const pool = require('../config/database');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'family-memorial-dev-secret-change-in-production';
+
 const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -9,7 +11,7 @@ const authenticate = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
 
     const [rows] = await pool.query(
       'SELECT id, name, email, role, avatar FROM users WHERE id = ? AND is_active = 1 AND deleted_at IS NULL',
