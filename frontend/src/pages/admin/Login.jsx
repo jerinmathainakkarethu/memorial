@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { loginAdmin } from '../../utils/api'
 import { useAuth } from '../../context/AuthContext'
-import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
+import Logo from '../../components/Logo'
 import '../../styles/Login.css'
 
 function Login() {
@@ -31,11 +31,30 @@ function Login() {
 
   return (
     <div className="login-page">
-      <Card className="login-card">
-        <Card.Header>Admin Login</Card.Header>
-        <Card.Body>
+      <div className="login-bg" />
+      <div className="login-overlay" />
+
+      <div className="login-container">
+        <div className="login-brand">
+          <Link to="/" className="login-brand__link">
+            <Logo size={48} />
+          </Link>
+          <h1 className="login-brand__title">Family Memorial</h1>
+          <p className="login-brand__subtitle">Admin Portal</p>
+        </div>
+
+        <div className="login-card">
+          <h2 className="login-card__title">Welcome Back</h2>
+          <p className="login-card__desc">Sign in to manage your memorial site</p>
+
           <form onSubmit={handleSubmit} className="login-form">
-            {error && <p className="login-error">{error}</p>}
+            {error && (
+              <div className="login-error">
+                <span className="login-error__icon">!</span>
+                {error}
+              </div>
+            )}
+
             <div className="form-group">
               <label htmlFor="email">Email</label>
               <input
@@ -48,6 +67,7 @@ function Login() {
                 className="form-input"
               />
             </div>
+
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <input
@@ -55,17 +75,22 @@ function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="admin123"
+                placeholder="Enter your password"
                 required
                 className="form-input"
               />
             </div>
-            <Button type="submit" disabled={loading}>
+
+            <Button type="submit" disabled={loading} className="login-btn">
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-        </Card.Body>
-      </Card>
+
+          <Link to="/" className="login-back">
+            ← Back to Site
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }
