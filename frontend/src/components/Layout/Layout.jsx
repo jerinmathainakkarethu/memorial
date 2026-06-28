@@ -7,10 +7,15 @@ import '../../styles/Layout.css'
 
 function Layout({ children }) {
   const [siteName, setSiteName] = useState('Family Memorial')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const { isAuthenticated, user, logout } = useAuth()
   const { language, setLanguage } = useLanguage()
   const location = useLocation()
   const isAdmin = location.pathname.startsWith('/admin')
+
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [location.pathname])
 
   useEffect(() => {
     if (!isAdmin) {
@@ -33,7 +38,8 @@ function Layout({ children }) {
   if (isAdmin) {
     return (
       <div className="admin-layout">
-        <aside className="sidebar">
+        <div className={`sidebar-overlay ${sidebarOpen ? 'sidebar-overlay--visible' : ''}`} onClick={() => setSidebarOpen(false)} />
+        <aside className={`sidebar ${sidebarOpen ? 'sidebar--open' : ''}`}>
           <div className="sidebar__brand">
             <Link to="/admin">Admin Panel</Link>
           </div>
@@ -55,6 +61,9 @@ function Layout({ children }) {
           </div>
         </aside>
         <main className="admin-content">
+          <button className="sidebar-toggle" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+            <span /><span /><span />
+          </button>
           {children}
         </main>
       </div>
