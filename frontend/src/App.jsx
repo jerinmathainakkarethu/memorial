@@ -13,6 +13,7 @@ import AdminMessages from './pages/admin/Messages'
 import AdminMedia from './pages/admin/Media'
 import AdminTimeline from './pages/admin/Timeline'
 import AdminSettings from './pages/admin/Settings'
+import AdminHomeContent from './pages/admin/HomeContent'
 import AdminUsers from './pages/admin/Users'
 
 function ProtectedRoute({ children }) {
@@ -36,6 +37,7 @@ function App() {
         <Route path="/admin/messages" element={<ProtectedRoute><AdminMessages /></ProtectedRoute>} />
         <Route path="/admin/media" element={<ProtectedRoute><AdminMedia /></ProtectedRoute>} />
         <Route path="/admin/timeline" element={<ProtectedRoute><AdminTimeline /></ProtectedRoute>} />
+        <Route path="/admin/home-content" element={<ProtectedRoute><AdminHomeContent /></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
       </Routes>

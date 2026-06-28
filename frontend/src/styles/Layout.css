@@ -23,10 +23,31 @@
 }
 
 .public-header__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 1.375rem;
   font-weight: 700;
   color: #fff;
   text-decoration: none;
+}
+
+.public-header__logo-icon {
+  display: none;
+}
+
+.public-header__logo-text {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+  .public-header__logo-icon {
+    display: flex;
+  }
+
+  .public-header__logo-text {
+    display: none;
+  }
 }
 
 .public-header__nav {

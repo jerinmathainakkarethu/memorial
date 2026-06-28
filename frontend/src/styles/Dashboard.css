@@ -6,10 +6,18 @@
 
 .page-title {
   font-size: 1.5rem;
-  color: #2c3e50;
+  font-weight: 700;
+  color: #0f172a;
   margin: 0;
 }
 
+.page-subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0.25rem 0 0;
+}
+
+/* ========== STATS GRID ========== */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -18,31 +26,71 @@
 
 .stat-card {
   text-align: center;
+  border: none !important;
+  border-radius: 14px !important;
+  color: #fff;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+.stat-card .card-body {
+  padding: 1.5rem 1rem;
+}
+
+.stat-card__icon {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .stat-card__value {
   font-size: 2.25rem;
-  font-weight: 700;
-  color: #2c3e50;
+  font-weight: 800;
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .stat-card__label {
-  font-size: 0.875rem;
-  color: #95a5a6;
-  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+  margin-top: 0.2rem;
 }
 
+/* ========== DASHBOARD GRID ========== */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
 }
 
+.recent-card {
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+
+.recent-card .card-header {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #fff;
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.recent-card__title {
+  font-size: 0.9375rem;
+}
+
 .recent-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .recent-item {
@@ -51,31 +99,38 @@
   gap: 0.75rem;
   text-decoration: none;
   color: inherit;
-  padding: 0.5rem;
-  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
   transition: background 0.15s;
 }
 
 .recent-item:hover {
-  background: #f8f9fa;
+  background: #f1f5f9;
 }
 
 .recent-item__avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #2c3e50;
-  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 0.875rem;
+  color: #fff;
   flex-shrink: 0;
 }
 
+.recent-item__avatar--deceased {
+  background: linear-gradient(135deg, #475569, #64748b);
+}
+
+.recent-item__avatar--living {
+  background: linear-gradient(135deg, #10b981, #34d399);
+}
+
 .recent-item__avatar--msg {
-  background: #3498db;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
 }
 
 .recent-item__info {
@@ -87,20 +142,37 @@
 
 .recent-item__name {
   font-size: 0.9375rem;
-  font-weight: 500;
-  color: #2c3e50;
+  font-weight: 600;
+  color: #0f172a;
 }
 
 .recent-item__detail {
   font-size: 0.8125rem;
-  color: #95a5a6;
+  color: #64748b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-top: 0.1rem;
 }
 
+/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-card__value {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.625rem;
   }
 }

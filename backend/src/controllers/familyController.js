@@ -23,7 +23,8 @@ exports.list = async (req, res, next) => {
     const total = countResult[0].total;
 
     const sql = `SELECT f.*, 
-      (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL) as member_count
+      (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL) as member_count,
+      (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL AND fm.is_deceased = 1) as departed_count
       FROM families f 
       ${where}
       ORDER BY f.created_at DESC 
@@ -43,7 +44,8 @@ exports.get = async (req, res, next) => {
   try {
     const [rows] = await pool.query(
       `SELECT f.*,
-        (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL) as member_count
+        (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL) as member_count,
+        (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL AND fm.is_deceased = 1) as departed_count
        FROM families f WHERE f.id = ? AND f.deleted_at IS NULL`,
       [req.params.id]
     );
@@ -62,7 +64,8 @@ exports.getBySlug = async (req, res, next) => {
   try {
     const [rows] = await pool.query(
       `SELECT f.*,
-        (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL) as member_count
+        (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL) as member_count,
+        (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL AND fm.is_deceased = 1) as departed_count
        FROM families f WHERE f.slug = ? AND f.deleted_at IS NULL`,
       [req.params.slug]
     );
@@ -206,8 +209,9 @@ exports.updateCover = async (req, res, next) => {
 exports.getPublicFamilies = async (req, res, next) => {
   try {
     const [rows] = await pool.query(
-      `SELECT f.id, f.name, f.slug, f.description, f.motto, f.cover_photo,
-        (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL) as member_count
+      `SELECT f.id, f.name, f.name_ml, f.slug, f.description, f.description_ml, f.motto, f.motto_ml, f.cover_photo,
+        (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL) as member_count,
+        (SELECT COUNT(*) FROM family_members fm WHERE fm.family_id = f.id AND fm.deleted_at IS NULL AND fm.is_deceased = 1) as departed_count
        FROM families f 
        WHERE f.is_active = 1 AND f.deleted_at IS NULL 
        ORDER BY f.name ASC`

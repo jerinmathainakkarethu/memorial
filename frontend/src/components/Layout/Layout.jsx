@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useLanguage } from '../../context/LanguageContext'
 import { fetchPublicSettings } from '../../utils/api'
+import Logo from '../Logo'
 import '../../styles/Layout.css'
 
 function Layout({ children }) {
@@ -50,6 +51,7 @@ function Layout({ children }) {
             <Link to="/admin/media" className={location.pathname.startsWith('/admin/media') ? 'active' : ''}>Media</Link>
             <Link to="/admin/messages" className={location.pathname.startsWith('/admin/messages') ? 'active' : ''}>Messages</Link>
             <Link to="/admin/timeline" className={location.pathname.startsWith('/admin/timeline') ? 'active' : ''}>Timeline</Link>
+            <Link to="/admin/home-content" className={location.pathname.startsWith('/admin/home-content') ? 'active' : ''}>Home Content</Link>
             <Link to="/admin/settings" className={location.pathname.startsWith('/admin/settings') ? 'active' : ''}>Settings</Link>
             <Link to="/admin/users" className={location.pathname.startsWith('/admin/users') ? 'active' : ''}>Users</Link>
           </nav>
@@ -74,7 +76,10 @@ function Layout({ children }) {
     <div className="public-layout">
       <header className="public-header">
         <div className="public-header__inner">
-          <Link to="/" className="public-header__logo">{siteName}</Link>
+          <Link to="/" className="public-header__logo">
+            <span className="public-header__logo-icon"><Logo size={28} /></span>
+            <span className="public-header__logo-text">{siteName}</span>
+          </Link>
           <div className="public-header__actions">
             <nav className="public-header__nav">
               <Link to="/">Home</Link>
