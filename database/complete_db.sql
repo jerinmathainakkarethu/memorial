@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 25, 2026 at 09:52 PM
+-- Generation Time: Jun 28, 2026 at 04:52 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -84,7 +84,13 @@ INSERT INTO `activity_logs` (`id`, `user_id`, `action`, `entity_type`, `entity_i
 (38, 1, 'UPLOAD_PHOTO', 'media', 6, 'Uploaded photo', NULL, NULL, '2026-06-26 00:51:55'),
 (39, 1, 'APPROVE_MESSAGE', 'memorial_messages', 26, 'Approved memorial message', NULL, NULL, '2026-06-26 00:53:46'),
 (40, 1, 'UPDATE_MEMBER', 'family_members', 7, 'Updated member', NULL, NULL, '2026-06-26 01:01:33'),
-(41, 1, 'UPDATE_MEMBER', 'family_members', 19, 'Updated member', NULL, NULL, '2026-06-26 01:02:01');
+(41, 1, 'UPDATE_MEMBER', 'family_members', 19, 'Updated member', NULL, NULL, '2026-06-26 01:02:01'),
+(42, 1, 'LOGIN', 'users', 1, 'User logged in', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-28 12:13:12'),
+(43, 1, 'LOGIN', 'users', 1, 'User logged in', '::1', NULL, '2026-06-28 12:14:06'),
+(44, 1, 'GENERATE_QR', 'qr_codes', 14, 'Generated QR for Idikula Yohannan', NULL, NULL, '2026-06-28 12:14:10'),
+(45, 1, 'GENERATE_QR', 'qr_codes', 14, 'Generated QR for Idikula Yohannan', NULL, NULL, '2026-06-28 12:15:57'),
+(46, 1, 'DELETE_FAMILY', 'families', 3, 'Deleted family', NULL, NULL, '2026-06-28 20:17:01'),
+(47, 1, 'UPDATE_FAMILY', 'families', 4, 'Updated family', NULL, NULL, '2026-06-28 20:21:18');
 
 -- --------------------------------------------------------
 
@@ -95,7 +101,7 @@ INSERT INTO `activity_logs` (`id`, `user_id`, `action`, `entity_type`, `entity_i
 CREATE TABLE `app_settings` (
   `id` int(10) UNSIGNED NOT NULL,
   `setting_key` varchar(100) NOT NULL,
-  `setting_value` varchar(255) DEFAULT NULL,
+  `setting_value` text DEFAULT NULL,
   `description` text DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -106,7 +112,23 @@ CREATE TABLE `app_settings` (
 --
 
 INSERT INTO `app_settings` (`id`, `setting_key`, `setting_value`, `description`, `created_at`, `updated_at`) VALUES
-(1, 'hide_living', '0', NULL, '2026-06-25 21:47:56', '2026-06-26 01:03:14');
+(1, 'hide_living', '0', NULL, '2026-06-25 21:47:56', '2026-06-28 19:26:13'),
+(2, 'site_name', 'Family Memorial', NULL, '2026-06-28 19:01:58', '2026-06-28 19:26:13'),
+(3, 'allow_public_messages', '1', NULL, '2026-06-28 19:01:59', '2026-06-28 19:26:13'),
+(4, 'auto_approve_messages', '1', NULL, '2026-06-28 19:01:59', '2026-06-28 19:26:13'),
+(5, 'allow_candles', '1', NULL, '2026-06-28 19:01:59', '2026-06-28 19:26:13'),
+(6, 'home_banner_quote_en', '\"Even though I walk through the darkest valley, I will fear no evil.\"', 'Home page banner quote (English)', '2026-06-28 20:08:30', '2026-06-28 20:14:22'),
+(7, 'home_banner_quote_ml', '\"ഇരുൾനിറഞ്ഞ താഴ്‌വരയിലൂടെയാണ്‌ ഞാൻ നടക്കുന്നതെങ്കിലും ഞാൻ ഒരു ഭയവും കൂടാതെയിരിക്കും.\"', 'Home page banner quote (Malayalam)', '2026-06-28 20:08:30', '2026-06-28 20:14:22'),
+(8, 'home_banner_cite_en', '— Psalm 23:4', 'Home page banner citation (English)', '2026-06-28 20:08:30', '2026-06-28 20:14:22'),
+(9, 'home_banner_cite_ml', '— സങ്കീർത്തനങ്ങൾ 23:4', 'Home page banner citation (Malayalam)', '2026-06-28 20:08:30', '2026-06-28 20:14:22'),
+(10, 'home_mission_title_en', 'Our Family Heritage', 'Home page mission section title (English)', '2026-06-28 20:08:30', '2026-06-28 20:14:22'),
+(11, 'home_mission_title_ml', 'നമ്മുടെ കുടുംബ പൈതൃകം', 'Home page mission section title (Malayalam)', '2026-06-28 20:08:30', '2026-06-28 20:14:22'),
+(12, 'home_mission_text_en', 'This memorial is a living archive of our family history — a place where stories are preserved, photos are cherished, and the flame of memory never fades. Explore the branches of our family tree, light a candle in loving memory, and leave your tribute for generations to come.', 'Home page mission section text (English)', '2026-06-28 20:08:30', '2026-06-28 20:14:22'),
+(13, 'home_mission_text_ml', 'ഈ സ്മരണിക നമ്മുടെ കുടുംബ ചരിത്രത്തിന്റെ ഒരു ജീവിക്കുന്ന ശേഖരമാണ് — കഥകൾ സംരക്ഷിക്കപ്പെടുകയും ഫോട്ടോകൾ വിലമതിക്കപ്പെടുകയും ഓർമ്മകളുടെ ജ്വാല ഒരിക്കലും കെടാതിരിക്കുകയും ചെയ്യുന്ന ഒരു സ്ഥലം. നമ്മുടെ കുടുംബ വൃക്ഷത്തിന്റെ ശാഖകളിലൂടെ സഞ്ചരിക്കുക, പ്രിയപ്പെട്ടവരുടെ ഓർമ്മയ്ക്കായി മെഴുകുതിരി കൊളുത്തുക, വരും തലമുറകൾക്കായി നിങ്ങളുടെ ആദരാഞ്ജലി രേഖപ്പെടുത്തുക.', 'Home page mission section text (Malayalam)', '2026-06-28 20:08:30', '2026-06-28 20:14:22'),
+(14, 'home_cta_title_en', 'Preserve Your Family Story', 'Home page CTA section title (English)', '2026-06-28 20:08:30', '2026-06-28 20:14:22'),
+(15, 'home_cta_title_ml', 'നിങ്ങളുടെ കുടുംബ കഥ സംരക്ഷിക്കുക', 'Home page CTA section title (Malayalam)', '2026-06-28 20:08:30', '2026-06-28 20:14:22'),
+(16, 'home_cta_text_en', 'Our family legacy is built on the lives we live and the memories we share. Every name, every face, every story matters.', 'Home page CTA section text (English)', '2026-06-28 20:08:30', '2026-06-28 20:14:22'),
+(17, 'home_cta_text_ml', 'നമ്മുടെ കുടുംബ പാരമ്പര്യം നാം ജീവിക്കുന്ന ജീവിതങ്ങളിലും പങ്കിടുന്ന ഓർമ്മകളിലും നിർമ്മിച്ചിരിക്കുന്നു. ഓരോ പേരും, ഓരോ മുഖവും, ഓരോ കഥയും പ്രധാനമാണ്.', 'Home page CTA section text (Malayalam)', '2026-06-28 20:08:30', '2026-06-28 20:14:22');
 
 -- --------------------------------------------------------
 
@@ -157,8 +179,8 @@ CREATE TABLE `families` (
 INSERT INTO `families` (`id`, `name`, `name_ml`, `slug`, `description`, `description_ml`, `motto`, `motto_ml`, `cover_photo`, `is_active`, `created_by`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 'The Mathai Family', 'മാത്യു കുടുംബം', 'the-mathai-family', 'A distinguished family with roots in central Kerala, known for their dedication to agriculture, education, and community welfare over multiple generations.', 'കേരളത്തിന്റെ മധ്യഭാഗത്ത് ഉത്ഭവിച്ച ഒരു പ്രമുഖ കുടുംബം, കൃഷി, വിദ്യാഭ്യാസം, കമ്മ്യൂണിറ്റി ക്ഷേമം എന്നിവയ്ക്കായി തലമുറകളായി നൽകിയ സംഭാവനകൾക്ക് പേരുകേട്ടതാണ്.', 'Unity is Strength, Love is Legacy', 'ഐക്യം ബലം, സ്നേഹം പാരമ്പര്യം', '/uploads/photos/926d1d84-f2cc-48ba-a9ac-70f2f03703a6.jpg', 1, 1, '2026-06-25 20:26:12', '2026-06-26 00:15:16', NULL),
 (2, 'The Cherian Family', 'ചെറിയാൻ കുടുംബം', 'the-cherian-family', 'A lineage with roots in Niranam, Pathanamthitta, historically prominent in academic scholarship, civil services, and philanthropic ventures.', 'പത്തനംതിട്ടയിലെ നിരണം സ്വദേശികളായ ഒരു പ്രമുഖ കുടുംബം, വിദ്യാഭ്യാസ രംഗത്തും സിവിൽ സർവീസിലും ജീവകാരുണ്യ പ്രവർത്തനങ്ങളിലും ചരിത്രപരമായ പങ്കുവഹിച്ചിട്ടുണ്ട്.', 'Faith, Integrity, Knowledge', 'വിശ്വാസം, സത്യസന്ധത, അറിവ്', '/uploads/photos/07ca8655-0605-466e-8a57-191a0b55b043.webp', 1, 1, '2026-06-25 20:26:12', '2026-06-26 00:12:32', NULL),
-(3, 'Nakkarethu Family', 'Nakkarethu', 'nakkarethu-family', 'A family known for its enduring commitment to faith, perseverance, and family bonds. The Nakkarethu Family carries forward a rich legacy built on dedication, mutual support, and respect for tradition across generations.', 'വിശ്വാസത്തിലും അധ്വാനത്തിലും കുടുംബബന്ധങ്ങളിലുമുള്ള അചഞ്ചലമായ പ്രതിബദ്ധതയ്ക്ക് പേരുകേട്ട കുടുംബമാണ് നക്കരേത്ത് കുടുംബം. സമർപ്പണവും പരസ്പര പിന്തുണയും പാരമ്പര്യങ്ങളോടുള്ള ആദരവും അടിസ്ഥാനമാക്കി സമ്പന്നമായ ഒരു കുടുംബപാരമ്പര്യം തലമുറകളിലൂടെ മുന്നോട്ട് കൊണ്ടുപോകുകയാണ് ഈ കുടുംബം.', 'Faith, Hard Work, Legacy', 'വിശ്വാസം, അധ്വാനം, പാരമ്പര്യം', '/uploads/photos/fd69f0b2-e47d-440e-ac30-99e96224a756.jpg', 1, 1, '2026-06-25 20:29:45', '2026-06-25 21:58:34', NULL),
-(4, 'Elikottu Family', 'എലിക്കോട്ടു കുടുംബം', 'elikottu-family', 'A respected family lineage rooted in strong values of togetherness, faith, and community service. Through generations, the Elikottu Family has preserved its heritage while contributing to the growth and well-being of the local community.', 'ഐക്യത്തിന്റെയും വിശ്വാസത്തിന്റെയും സമൂഹസേവനത്തിന്റെയും മൂല്യങ്ങളിൽ അധിഷ്ഠിതമായ ഒരു അഭിമാനകരമായ കുടുംബപരമ്പരയാണ് എലിക്കോട്ടു കുടുംബം. തലമുറകളിലൂടെ പാരമ്പര്യം സംരക്ഷിച്ചുകൊണ്ട് സമൂഹത്തിന്റെ പുരോഗതിക്കും ക്ഷേമത്തിനും വിലപ്പെട്ട സംഭാവനകൾ നൽകി വരുന്ന കുടുംബമാണ് ഇത്.', 'Unity, Tradition, Service', 'ഐക്യം, പാരമ്പര്യം, സേവനം', NULL, 1, 1, '2026-06-25 20:33:21', '2026-06-25 21:59:00', NULL);
+(3, 'Nakkarethu Family', 'Nakkarethu', 'nakkarethu-family', 'A family known for its enduring commitment to faith, perseverance, and family bonds. The Nakkarethu Family carries forward a rich legacy built on dedication, mutual support, and respect for tradition across generations.', 'വിശ്വാസത്തിലും അധ്വാനത്തിലും കുടുംബബന്ധങ്ങളിലുമുള്ള അചഞ്ചലമായ പ്രതിബദ്ധതയ്ക്ക് പേരുകേട്ട കുടുംബമാണ് നക്കരേത്ത് കുടുംബം. സമർപ്പണവും പരസ്പര പിന്തുണയും പാരമ്പര്യങ്ങളോടുള്ള ആദരവും അടിസ്ഥാനമാക്കി സമ്പന്നമായ ഒരു കുടുംബപാരമ്പര്യം തലമുറകളിലൂടെ മുന്നോട്ട് കൊണ്ടുപോകുകയാണ് ഈ കുടുംബം.', 'Faith, Hard Work, Legacy', 'വിശ്വാസം, അധ്വാനം, പാരമ്പര്യം', '/uploads/photos/fd69f0b2-e47d-440e-ac30-99e96224a756.jpg', 1, 1, '2026-06-25 20:29:45', '2026-06-28 20:17:01', '2026-06-28 20:17:01'),
+(4, 'Elikottu Family', 'എലിക്കോട്ടു കുടുംബം', 'elikottu-family', 'A respected family lineage rooted in strong values of togetherness, faith, and community service. Through generations, the Elikottu Family has preserved its heritage while contributing to the growth and well-being of the local community.', 'ഐക്യത്തിന്റെയും വിശ്വാസത്തിന്റെയും സമൂഹസേവനത്തിന്റെയും മൂല്യങ്ങളിൽ അധിഷ്ഠിതമായ ഒരു അഭിമാനകരമായ കുടുംബപരമ്പരയാണ് എലിക്കോട്ടു കുടുംബം. തലമുറകളിലൂടെ പാരമ്പര്യം സംരക്ഷിച്ചുകൊണ്ട് സമൂഹത്തിന്റെ പുരോഗതിക്കും ക്ഷേമത്തിനും വിലപ്പെട്ട സംഭാവനകൾ നൽകി വരുന്ന കുടുംബമാണ് ഇത്.', 'Unity, Tradition, Service', 'ഐക്യം, പാരമ്പര്യം, സേവനം', '/uploads/photos/1f3d4043-98bd-464e-a951-62d69e02ecd7.jpg', 1, 1, '2026-06-25 20:33:21', '2026-06-28 20:21:18', NULL);
 
 -- --------------------------------------------------------
 
@@ -638,7 +660,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password_hash`, `role`, `avatar`, `is_active`, `last_login_at`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Super Admin', 'admin@familymemorial.com', '$2a$10$ADAzgBPM6oo38FbYCUO/p.2ZAyzbQxCTMTvirKRghBkF/qTS.G9Vm', 'super_admin', NULL, 1, '2026-06-25 20:26:12', '2026-06-25 20:26:09', '2026-06-25 20:26:12', NULL);
+(1, 'Super Admin', 'admin@familymemorial.com', '$2a$10$ADAzgBPM6oo38FbYCUO/p.2ZAyzbQxCTMTvirKRghBkF/qTS.G9Vm', 'super_admin', NULL, 1, '2026-06-28 12:14:06', '2026-06-25 20:26:09', '2026-06-28 12:14:06', NULL);
 
 -- --------------------------------------------------------
 
@@ -820,13 +842,13 @@ ALTER TABLE `videos`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `app_settings`
 --
 ALTER TABLE `app_settings`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `audio_clips`
